@@ -16,6 +16,7 @@ if(isset($_POST['submit'])){
 
    $email = $_POST['email'];
    $email = filter_var($email, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+   $_SESSION['password'] = $_POST['pass'];
    $pass = md5($_POST['pass']);
    $pass = filter_var($pass, FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
@@ -26,10 +27,13 @@ if(isset($_POST['submit'])){
 
    $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-   if($rowCount > 0){
+   if($row['type_account'] == 'user'){
       $_SESSION['user_id'] = $row['id'];
       header('location:home.php');
-      exit(); // Останавливаем выполнение скрипта
+   }
+   elseif ($row['type_account'] == 'admin'){
+      $_SESSION['admin_id'] = $row['id'];
+      header('location:main.php');
    }
    else{
          $message[] = 'Пользователь не найден!';

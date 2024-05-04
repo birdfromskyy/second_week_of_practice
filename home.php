@@ -25,36 +25,50 @@ if(!isset($user_id)){
 <body>
    <?php include 'header.php'; ?>
    <?php
-      $selectUser = $conn->prepare("SELECT * FROM `users` WHERE id = ?");
-      $selectUser->execute([$_SESSION['user_id']]);
-      $user = $selectUser->fetch(PDO::FETCH_ASSOC);
-      
-      $selectInteraction = $conn->prepare("SELECT * FROM `interaction` WHERE id_student = ?");
-      $selectInteraction->execute([$_SESSION['user_id']]);
-      $interaction = $selectInteraction->fetch(PDO::FETCH_ASSOC);
+        
+        $selectUser = $conn->prepare("SELECT * FROM `users` WHERE id = ?");
+        $selectUser->execute([$_SESSION['user_id']]);
+        $user = $selectUser->fetch(PDO::FETCH_ASSOC);
+        
+        $selectInteraction = $conn->prepare("SELECT * FROM `interaction` WHERE id_student = ?");
+        $selectInteraction->execute([$_SESSION['user_id']]);
+        $interaction = $selectInteraction->fetch(PDO::FETCH_ASSOC);
 
-      $id_practic = $interaction['id_practic'];
+        $id_practic = $interaction['id_practic'];
 
-      $user_email = $user['email'];
-      $user_pass = $_SESSION['password'];
-      
-      $selectPractice = $conn->prepare("SELECT * FROM `practics` WHERE id = ?");
-      $selectPractice->execute([$id_practic]);
-      $practice = $selectPractice->fetch(PDO::FETCH_ASSOC);
+        $user_email = $user['email'];
+        $user_pass = $_SESSION['password'];
+        
+        $selectPractice = $conn->prepare("SELECT * FROM `practics` WHERE id = ?");
+        $selectPractice->execute([$id_practic]);
+        $practice = $selectPractice->fetch(PDO::FETCH_ASSOC);
 
-      $selectTasks = $conn->prepare("SELECT * FROM `tasks` WHERE id_student = ?");
-      $selectTasks->execute([$_SESSION['user_id']]);
-      $tasks = $selectTasks->fetch(PDO::FETCH_ASSOC);
-
-      if ($_SERVER["REQUEST_METHOD"] == "POST") {
-            if ($_SERVER["REQUEST_METHOD"] == "POST") {
-                  $pyscript = shell_exec("D:\\Python\\python.exe D:\\xampp\\htdocs\\SecondProject\\AttemptsToWorkWithWord\\AttemptsToWorkWithWord.py $user_email $user_pass");
-                  echo $pyscript;
-                  echo '<script>';
-                  echo 'alert("Действие выполнено успешно!");';
-                  echo '</script>';
+        if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['create_document'])) {
+            // Проверяем, загружен ли файл
+            if(isset($_FILES['uploaded_file']) && $_FILES['uploaded_file']['error'] === UPLOAD_ERR_OK) {
+                // Перемещаем загруженный файл в указанную папку
+                $upload_dir = 'D:\\xampp\\htdocs\\SecondProject\\AttemptsToWorkWithWord\\';
+                $file_name = $_FILES['uploaded_file']['name'];
+                $file_path = $upload_dir . $file_name;
+                move_uploaded_file($_FILES['uploaded_file']['tmp_name'], $file_path);
+                
+                // Запускаем скрипт после перемещения файла
+                // Передаем email, пароль и имя файла в качестве аргументов
+                $pyscript = shell_exec("D:\\Python\\python.exe D:\\xampp\\htdocs\\SecondProject\\AttemptsToWorkWithWord\\AttemptsToWorkWithWord.py $user_email $user_pass \"$file_name\"");
+                
+                // Выводим результат выполнения скрипта
+                echo $pyscript;
+                echo '<script>';
+                echo 'alert("Действие выполнено успешно!");';
+                echo '</script>';
+            } else {
+                // Если файл не был загружен или возникла ошибка при загрузке, выводим сообщение об ошибке
+                echo '<script>';
+                echo 'alert("Произошла ошибка при загрузке файла!");';
+                echo '</script>';
             }
-      }
+        }
+        
    ?>
    <div class="profile-container">
       <div class="section">
@@ -119,7 +133,7 @@ if(!isset($user_id)){
         <div class="input-group">
             <label>Оценка:</label>
             <span><?= $interaction['ocenka'] ?></span>
-      </div>
+        </div>
         <h3>Данные о практике</h3>
         <div class="input-group">
             <label>Вид практики:</label>
@@ -181,180 +195,10 @@ if(!isset($user_id)){
             <label>Дата приказа:</label>
             <span><?= $practice['date'] ?></span>
         </div>
-        <h3>Задачи</h3>
-        <div class="input-group">
-            <label>Задача:</label>
-            <span><?= $tasks['task_name_1'] ?></span>
-        </div>
-        <div class="input-group">
-            <label>Дата:</label>
-            <span><?= $tasks['task_date_1'] ?></span>
-        </div>
-        <div class="input-group">
-            <label>Задача:</label>
-            <span><?= $tasks['task_name_2'] ?></span>
-        </div>
-        <div class="input-group">
-            <label>Дата:</label>
-            <span><?= $tasks['task_date_2'] ?></span>
-        </div>
-        <div class="input-group">
-            <label>Задача:</label>
-            <span><?= $tasks['task_name_3'] ?></span>
-        </div>
-        <div class="input-group">
-            <label>Дата:</label>
-            <span><?= $tasks['task_date_3'] ?></span>
-        </div>
-        <div class="input-group">
-            <label>Задача:</label>
-            <span><?= $tasks['task_name_4'] ?></span>
-        </div>
-        <div class="input-group">
-            <label>Дата:</label>
-            <span><?= $tasks['task_date_4'] ?></span>
-        </div>
-        <div class="input-group">
-            <label>Задача:</label>
-            <span><?= $tasks['task_name_5'] ?></span>
-        </div>
-        <div class="input-group">
-            <label>Дата:</label>
-            <span><?= $tasks['task_date_5'] ?></span>
-        </div>
-        <div class="input-group">
-            <label>Задача:</label>
-            <span><?= $tasks['task_name_6'] ?></span>
-        </div>
-        <div class="input-group">
-            <label>Дата:</label>
-            <span><?= $tasks['task_date_6'] ?></span>
-        </div>
-        <div class="input-group">
-            <label>Задача:</label>
-            <span><?= $tasks['task_name_7'] ?></span>
-        </div>
-        <div class="input-group">
-            <label>Дата:</label>
-            <span><?= $tasks['task_date_7'] ?></span>
-        </div>
-        <div class="input-group">
-            <label>Задача:</label>
-            <span><?= $tasks['task_name_8'] ?></span>
-        </div>
-        <div class="input-group">
-            <label>Дата:</label>
-            <span><?= $tasks['task_date_8'] ?></span>
-        </div>
-        <div class="input-group">
-            <label>Задача:</label>
-            <span><?= $tasks['task_name_9'] ?></span>
-        </div>
-        <div class="input-group">
-            <label>Дата:</label>
-            <span><?= $tasks['task_date_9'] ?></span>
-        </div>
-        <div class="input-group">
-            <label>Задача:</label>
-            <span><?= $tasks['task_name_10'] ?></span>
-        </div>
-        <div class="input-group">
-            <label>Дата:</label>
-            <span><?= $tasks['task_date_10'] ?></span>
-        </div>
-        <div class="input-group">
-            <label>Задача:</label>
-            <span><?= $tasks['task_name_11'] ?></span>
-        </div>
-        <div class="input-group">
-            <label>Дата:</label>
-            <span><?= $tasks['task_date_11'] ?></span>
-        </div>
-        <div class="input-group">
-            <label>Задача:</label>
-            <span><?= $tasks['task_name_12'] ?></span>
-        </div>
-        <div class="input-group">
-            <label>Дата:</label>
-            <span><?= $tasks['task_date_12'] ?></span>
-        </div>
-        <div class="input-group">
-            <label>Задача:</label>
-            <span><?= $tasks['task_name_13'] ?></span>
-        </div>
-        <div class="input-group">
-            <label>Дата:</label>
-            <span><?= $tasks['task_date_13'] ?></span>
-        </div>
-        <div class="input-group">
-            <label>Задача:</label>
-            <span><?= $tasks['task_name_14'] ?></span>
-        </div>
-        <div class="input-group">
-            <label>Дата:</label>
-            <span><?= $tasks['task_date_14'] ?></span>
-        </div>
-        <div class="input-group">
-            <label>Задача:</label>
-            <span><?= $tasks['task_name_15'] ?></span>
-        </div>
-        <div class="input-group">
-            <label>Дата:</label>
-            <span><?= $tasks['task_date_15'] ?></span>
-        </div>
-        <div class="input-group">
-            <label>Задача:</label>
-            <span><?= $tasks['task_name_16'] ?></span>
-        </div>
-        <div class="input-group">
-            <label>Дата:</label>
-            <span><?= $tasks['task_date_16'] ?></span>
-        </div>
-        <div class="input-group">
-            <label>Задача:</label>
-            <span><?= $tasks['task_name_17'] ?></span>
-        </div>
-        <div class="input-group">
-            <label>Дата:</label>
-            <span><?= $tasks['task_date_17'] ?></span>
-        </div>
-        <div class="input-group">
-            <label>Задача:</label>
-            <span><?= $tasks['task_name_18'] ?></span>
-        </div>
-        <div class="input-group">
-            <label>Дата:</label>
-            <span><?= $tasks['task_date_18'] ?></span>
-        </div>
-        <div class="input-group">
-            <label>Задача:</label>
-            <span><?= $tasks['task_name_19'] ?></span>
-        </div>
-        <div class="input-group">
-            <label>Дата:</label>
-            <span><?= $tasks['task_date_19'] ?></span>
-        </div>
-        <div class="input-group">
-            <label>Задача:</label>
-            <span><?= $tasks['task_name_20'] ?></span>
-        </div>
-        <div class="input-group">
-            <label>Дата:</label>
-            <span><?= $tasks['task_date_20'] ?></span>
-        </div>
-        <div class="input-group">
-            <label>Задача:</label>
-            <span><?= $tasks['task_name_21'] ?></span>
-        </div>
-        <div class="input-group">
-            <label>Дата:</label>
-            <span><?= $tasks['task_date_21'] ?></span>
-        </div>
-        <form method="POST">
-            <button type="submit">Создать документ</button>
-            <a href="output.docx" download="" class="download-link">
-                  Скачать документ
-            </a>
+        <form method="POST" enctype="multipart/form-data">
+            <input type="file" name="uploaded_file">
+            <button type="submit" name="create_document">Создать документ</button>
+            <a href="output.docx" download="" class="download-link">Скачать документ</a>
         </form>
 </body>
 </html>
