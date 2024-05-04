@@ -16,9 +16,11 @@ if(isset($message)){
 
 <div class="flex">
     <nav class="navbar">
+        <a href="main.php">ГЛАВНАЯ</a>
         <a href="add_student.php">ДОБАВИТЬ СТУДЕНТА</a>
         <a href="students.php">ОЦЕНИТЬ СТУДЕНТА</a>
         <a href="add_practic.php">ДОБАВИТЬ ПРАКТИКУ</a>
+        <a href="practics.php">ПРАКТИКИ</a>
         <a href="logout.php">ВЫЙТИ</a>
     </nav>
 </div>

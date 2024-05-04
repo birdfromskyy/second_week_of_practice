@@ -85,8 +85,8 @@ if(isset($_POST['save_practice'])){
                 <input type="text" id="type" name="type" value="" placeholder="Введите тип практики" required>
             </div>
             <div class="input-group">
-                <label for="name">Название практики:</label>
-                <input type="text" id="name" name="name" value="" placeholder="Введите название практики" required>
+                <label for="name">Название организации:</label>
+                <input type="text" id="name" name="name" value="" placeholder="Введите название организации" required>
             </div>
             <div class="input-group">
                 <label for="place_practic">Место практики:</label>

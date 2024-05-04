@@ -13,13 +13,46 @@ if(!isset($admin_id)){
 if(isset($_POST['submit'])) {
     // Получаем значения полей формы
     $selectedStudentId = $_POST['student_id'];
-    $vid_dogovora = $_POST['vid_dogovora'];
-    $payment = $_POST['payment'];
-    $spravlyalsya = $_POST['spravlyalsya'];
-    $kachestva = $_POST['kachestva'];
-    $amount_vipolneniya = $_POST['amount_vipolneniya'];
-    $zamechaniya = $_POST['zamechaniya'];
-    $ocenka = $_POST['ocenka'];
+$ocenka = $_POST['ocenka'];
+
+// Определение качеств и объема выполнения в зависимости от оценки
+switch ($ocenka) {
+    case 'отлично':
+        $payment = "нет";
+        $kachestva = "высокая ответственность, пунктуальность, тщательность в выполнении заданий";
+        $amount_vipolneniya = "полностью";
+        $spravlyalsya = "оперативно";
+        $zamechaniya = "отсутствуют";
+        break;
+    case 'хорошо':
+        $payment = "нет";
+        $kachestva = "ответственность, пунктуальность";
+        $amount_vipolneniya = "большинство заданий";
+        $spravlyalsya = "хорошо";
+        $zamechaniya = "отсутствуют";
+        break;
+    case 'удовлетворительно':
+        $payment = "нет";
+        $kachestva = "удовлетворительная ответственность, пунктуальность, выполнение в срок";
+        $spravlyalsya = "с трудом";
+        $amount_vipolneniya = "не в полном объеме";
+        $zamechaniya = "малоактивен";
+        break;
+    case 'неудовлетворительно':
+        $payment = "нет";
+        $kachestva = "низкая ответственность, непунктуальность, неполное выполнение заданий";
+        $spravlyalsya = "плохо";
+        $amount_vipolneniya = "неуспешно";
+        $zamechaniya = "не проявлял активности, требуется значительное улучшение";
+        break;
+    default:
+        $payment = "нет";
+        $kachestva = "";
+        $amount_vipolneniya = "";
+        $zamechaniya = "";
+        break;
+}
+
 
     // Проверяем, существует ли студент с заданным id в таблице interaction
     $checkStudentQuery = $conn->prepare("SELECT COUNT(*) as count FROM interaction WHERE id_student = ?");
@@ -28,12 +61,12 @@ if(isset($_POST['submit'])) {
 
     if($result['count'] > 0) {
         // Если студент существует, выполняем обновление данных
-        $updateInteraction = $conn->prepare("UPDATE interaction SET vid_dogovora=?, payment=?, spravlyalsya=?, kachestva=?, amount_vipolneniya=?, zamechaniya=?, ocenka=? WHERE id_student=?");
-        $updateInteraction->execute([$vid_dogovora, $payment, $spravlyalsya, $kachestva, $amount_vipolneniya, $zamechaniya, $ocenka, $selectedStudentId]);
+        $updateInteraction = $conn->prepare("UPDATE interaction SET payment=?, spravlyalsya=?, kachestva=?, amount_vipolneniya=?, zamechaniya=?, ocenka=? WHERE id_student=?");
+        $updateInteraction->execute([$payment, $spravlyalsya, $kachestva, $amount_vipolneniya, $zamechaniya, $ocenka, $selectedStudentId]);
     } else {
         // Если студент не существует, выполняем вставку новых данных
-        $insertInteraction = $conn->prepare("INSERT INTO interaction (id_student, vid_dogovora, payment, spravlyalsya, kachestva, amount_vipolneniya, zamechaniya, ocenka) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-        $insertInteraction->execute([$selectedStudentId, $vid_dogovora, $payment, $spravlyalsya, $kachestva, $amount_vipolneniya, $zamechaniya, $ocenka]);
+        $insertInteraction = $conn->prepare("INSERT INTO interaction (id_student, payment, spravlyalsya, kachestva, amount_vipolneniya, zamechaniya, ocenka) VALUES (?, ?, ?, ?, ?, ?, ?)");
+        $insertInteraction->execute([$selectedStudentId, $payment, $spravlyalsya, $kachestva, $amount_vipolneniya, $zamechaniya, $ocenka]);
     }
 
     // Перенаправляем пользователя после выполнения операции
@@ -76,54 +109,14 @@ if(isset($_POST['submit'])) {
             ?>
 
             </select>
-
-            <!-- Вид договора -->
-            <div class="input-group" style="margin-bottom: 10px;">
-                <label for="vid_dogovora">Вид договора:</label>
-                <input type="text" id="vid_dogovora" name="vid_dogovora" required style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box;">
-            </div>
-
-            <!-- Оплачиваемая ли практика -->
-            <div class="input-group" style="margin-bottom: 10px;">
-                <label for="payment">Оплачиваемая ли практика:</label>
-                <select id="payment" name="payment" required style="width: 100%; padding: 10px; font-size: 16px; border-radius: 5px; border: 1px solid #ccc; box-sizing: border-box;">
-                    <option value="Да">Да</option>
-                    <option value="Нет">Нет</option>
-                </select>
-            </div>
-
-            <!-- Как справлялся -->
-            <div class="input-group" style="margin-bottom: 10px;">
-                <label for="spravlyalsya">Как справлялся:</label>
-                <input type="text" id="spravlyalsya" name="spravlyalsya" required style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box;">
-            </div>
-
-            <!-- Качества -->
-            <div class="input-group" style="margin-bottom: 10px;">
-                <label for="kachestva">Качества:</label>
-                <input type="text" id="kachestva" name="kachestva" required style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box;">
-            </div>
-
-            <!-- Объем выполнения -->
-            <div class="input-group" style="margin-bottom: 10px;">
-                <label for="amount_vipolneniya">Объем выполнения:</label>
-                <input type="text" id="amount_vipolneniya" name="amount_vipolneniya" required style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box;">
-            </div>
-
-            <!-- Замечания -->
-            <div class="input-group" style="margin-bottom: 10px;">
-                <label for="zamechaniya">Замечания:</label>
-                <input type="text" id="zamechaniya" name="zamechaniya" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box;">
-            </div>
-
             <!-- Оценка -->
             <div class="input-group" style="margin-bottom: 10px;">
                 <label for="ocenka">Оценка:</label>
                 <select id="ocenka" name="ocenka" required style="width: 100%; padding: 10px; font-size: 16px; border-radius: 5px; border: 1px solid #ccc; box-sizing: border-box;">
-                    <option value="Отлично">Отлично</option>
-                    <option value="Хорошо">Хорошо</option>
-                    <option value="Удовлетворительно">Удовлетворительно</option>
-                    <option value="Неудовлетворительно">Неудовлетворительно</option>
+                    <option value="отлично">Отлично</option>
+                    <option value="хорошо">Хорошо</option>
+                    <option value="удовлетворительно">Удовлетворительно</option>
+                    <option value="неудовлетворительно">Неудовлетворительно</option>
                 </select>
             </div>
 

@@ -19,7 +19,6 @@ if(isset($message)){
       <a href="home.php">ГЛАВНАЯ</a>
       <a href="profile.php">ПРОФИЛЬ</a>
       <a href="practic.php">ПРАКТИКА</a>
-      <a href="tasks.php">ЗАДАЧИ</a>
       <a href="logout.php">ВЫЙТИ</a>
    </nav>
 </div>

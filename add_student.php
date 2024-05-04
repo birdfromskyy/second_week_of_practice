@@ -16,18 +16,22 @@ if(isset($_POST['submit'])) {
     $surname = $_POST['surname'];
     $name = $_POST['name'];
     $patronymic = $_POST['patronymic'];
+    $course = 2;
+    $groupp = "1521б";
+    $institute = "Инженерная Школа Информационных Технологий";
+    $direction = "Программная инженерия";
 
     // Генерируем пароль
-    $password = generatePassword(7); // Генерируем пароль из 7 символов
+    $password = md5(322); // Генерируем пароль из 7 символов
 
     // Генерируем email
     $email = generateEmail($surname, $name, $patronymic);
 
     // Подготавливаем запрос для вставки данных в таблицу users
-    $insertUser = $conn->prepare("INSERT INTO users (surname, name, patronymic, pass, email) VALUES (?, ?, ?, ?, ?)");
+    $insertUser = $conn->prepare("INSERT INTO users (surname, name, patronymic, pass, email, course, groupp, institute, direction) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
     // Выполняем запрос
-    $insertUser->execute([$surname, $name, $patronymic, $password, $email]);
+    $insertUser->execute([$surname, $name, $patronymic, $password, $email, $course, $groupp, $institute, $direction]);
 
     // Перенаправляем пользователя после выполнения операции
     header('Location: add_student.php');
@@ -42,8 +46,9 @@ function generatePassword($length) {
         $index = rand(0, strlen($characters) - 1);
         $password .= $characters[$index];
     }
-    return $password;
+    return md5($password); // Hash the password using MD5
 }
+
 
 // Функция для генерации email
 function generateEmail() {
